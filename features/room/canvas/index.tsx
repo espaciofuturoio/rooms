@@ -4,7 +4,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { useCharacterMovement } from './game/useCharacterMovement';
 import { useKeyHandler } from './game/useKeyHandler';
 import { CanvasRenderer } from './CanvasRenderer';
-import { SHOP_HEIGHT_UNITS, SHOP_WIDTH_UNITS, TILE_SIZE, useGameSetup } from './game/useGameSetup';
+import { useGameSetup } from './game/useGameSetup';
 import { isDesktopBrowser, isMobileBrowser, isMobile } from './utils';
 import { ReactNativeJoystick } from "@/libs/react-native-joystick";
 import { useJoystick } from './game/useJoystick';
@@ -19,7 +19,7 @@ export const CoffeeShop: React.FC = () => {
   const {onMoveJoystick} = useJoystick(handleMove);
   const viewRef = useRef<View>(null);
 
-  const {sessionId, state} = useStudyRoom();
+  const {sessionId, widthUnits, heightUnits, layout, players} = useStudyRoom();
 
   const behavior = Platform.OS === 'web' ? { onKeyDown: handleKeyDown } : {};
 
@@ -30,9 +30,9 @@ export const CoffeeShop: React.FC = () => {
     }, [])
   );
 
-  if (!sessionId) return null;
+  if (!sessionId || !layout) return <Text>Loading...</Text>;
 
-  console.log({state, sessionId});
+  console.log({players});
 
   return (
     <View
@@ -41,7 +41,7 @@ export const CoffeeShop: React.FC = () => {
       {...behavior}
       tabIndex={0}
     >
-      <CanvasRenderer coffeeShopLogic={coffeeShopLogic} characters={characters} tileSize={TILE_SIZE} />
+      <CanvasRenderer layout={layout} players={[]} tileSize={TILE_SIZE} widthUnits={widthUnits} heightUnits={heightUnits} />
       {isDesktopBrowser && (
       <>
         <Text>Desktop: You can use Joystick or Arrow Keys to move around</Text>
@@ -67,8 +67,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#f6f8fd',
   },
   canvas: {
-    width: TILE_SIZE * SHOP_WIDTH_UNITS,
-    height: TILE_SIZE * SHOP_HEIGHT_UNITS,
     borderWidth: 1,
     borderColor: '#d1d5db'
   },

@@ -5,11 +5,6 @@ import { Player } from './Player';
 import { isMobile, isMobileBrowser } from '../utils';
 
 export const TILE_SIZE = isMobile || isMobileBrowser ? 16 : 32;
-export const SHOP_WIDTH_UNITS = 20;
-export const SHOP_HEIGHT_UNITS = 15;
-
-export const SHOP_WIDTH = SHOP_WIDTH_UNITS * TILE_SIZE;
-export const SHOP_HEIGHT = SHOP_HEIGHT_UNITS * TILE_SIZE;
 
 const initialCharacters = [
   new Player({ x: 5, y: 5, color: '#0000FF', role: 'Barista', id: '1' }),
@@ -18,6 +13,6 @@ const initialCharacters = [
 ];
 
 export const useGameSetup = () => {
-  const coffeeShopLogic = useMemo(() => new CoffeeShopLogic(SHOP_WIDTH_UNITS, SHOP_HEIGHT_UNITS), []);
+  const coffeeShopLogic = useMemo(() => new CoffeeShopLogic(20, 15), []);
   return { coffeeShopLogic, initialCharacters, TILE_SIZE };
 }; 

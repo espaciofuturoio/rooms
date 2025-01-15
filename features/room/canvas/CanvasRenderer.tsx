@@ -1,19 +1,21 @@
 import { Canvas, Rect } from '@shopify/react-native-skia';
-import type { CoffeeShopLogic } from './game/CoffeeShopLogic';
+import type { TileLayout } from './realtime/StudyRoomState.schema';
 import type { Player } from './game/Player';
-import { SHOP_HEIGHT, SHOP_WIDTH } from './game/useGameSetup';
 
 interface CanvasRendererProps {
-  coffeeShopLogic: CoffeeShopLogic;
-  characters: Player[];
+  layout: TileLayout[][];
+  players: TileLayout[];
   tileSize: number;
+  widthUnits: number | undefined;
+  heightUnits: number | undefined;
 }
 
-export const CanvasRenderer: React.FC<CanvasRendererProps> = ({ coffeeShopLogic, characters, tileSize }) => {
+export const CanvasRenderer: React.FC<CanvasRendererProps> = ({ layout, players, tileSize, widthUnits, heightUnits }) => {
+  if (!widthUnits || !heightUnits) return null;
   return (
-    <Canvas style={{ width: SHOP_WIDTH, height: SHOP_HEIGHT }}>
+    <Canvas style={{ width: widthUnits * tileSize, height: heightUnits * tileSize }}>
       {/* Draw Tiles */}
-      {coffeeShopLogic.layout.map((row, y) =>
+      {layout.map((row, y) =>
         row.map((tile, x) => (
           <Rect
             key={tile.id}
@@ -26,7 +28,7 @@ export const CanvasRenderer: React.FC<CanvasRendererProps> = ({ coffeeShopLogic,
         ))
       )}
       {/* Draw Characters */}
-      {characters.map((character) => (
+      {players.map((character) => (
         <Rect
           key={character.id}
           x={character.x * tileSize}
