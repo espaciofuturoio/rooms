@@ -33,8 +33,6 @@ export class CoffeeShopLogic {
         }
       }
     }
-    console.log("layout--->", layout[0].length, layout.length);
-    console.log(layout);
     return layout;
   }
 

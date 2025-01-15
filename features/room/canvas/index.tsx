@@ -1,83 +1,19 @@
-import type React from 'react';
-import { useCallback, useState, useRef } from 'react';
+import { useCallback, useRef } from 'react';
 import { View, StyleSheet, Platform, Text } from 'react-native';
-import { 
-  Canvas, 
-  Rect,
-} from '@shopify/react-native-skia';
-import { CoffeeShopLogic } from './game/CoffeeShopLogic';
-import { Player } from './game/Player';
 import { useFocusEffect } from '@react-navigation/native';
-import { IReactNativeJoystickEvent, ReactNativeJoystick } from "@/libs/react-native-joystick";
-
-const TILE_SIZE = 32;
-const SHOP_WIDTH = 20;
-const SHOP_HEIGHT = 15;
-
-const isWeb = Platform.OS === 'web';
-const isMobile = Platform.OS === 'ios' || Platform.OS === 'android';
-const isMobileBrowser = isWeb && /Mobi|Android/i.test(navigator.userAgent);
-const isDesktopBrowser = isWeb && !isMobileBrowser;
-
-const initialCharacters = [
-  new Player({x: 5, y: 5, color: '#0000FF', role: 'Barista', id: '1'}),
-  new Player({x: 15, y: 5, color: '#FF0000', role: 'Cashier', id: '2'}),
-  new Player({x: 10, y: 10, color: '#00FF00', role: 'Waiter', id: '3'})
-];
+import { useCharacterMovement } from './game/useCharacterMovement';
+import { useKeyHandler } from './game/useKeyHandler';
+import { CanvasRenderer } from './CanvasRenderer';
+import { SHOP_HEIGHT_UNITS, SHOP_WIDTH_UNITS, TILE_SIZE, useGameSetup } from './game/useGameSetup';
+import { isDesktopBrowser, isMobileBrowser, isMobile } from './utils';
 
 export const CoffeeShop: React.FC = () => {
-
-  const handleKeyDown = (event: React.KeyboardEvent) => {
-    console.log(`Key pressed: ${event.key}`);
-    const key = event.key;
-    switch (key) {
-      case 'ArrowUp':
-        handleMove(0, -1);
-        break;
-      case 'ArrowDown':
-        handleMove(0, 1);
-        break;
-      case 'ArrowLeft':
-        handleMove(-1, 0);
-        break;
-      case 'ArrowRight':
-        handleMove(1, 0);
-        break;
-    }
-  };
-
-  const [activeCharacterIndex, setActiveCharacterIndex] = useState(0);
-  const [interactionMessage, setInteractionMessage] = useState<string>('');
-  const coffeeShopLogic = new CoffeeShopLogic(SHOP_WIDTH, SHOP_HEIGHT);
-  const [characters, setCharacters] = useState<Player[]>(initialCharacters);
+  const { coffeeShopLogic, initialCharacters, TILE_SIZE } = useGameSetup();
+  const { characters, handleMove, changeCharacter } = useCharacterMovement(initialCharacters, coffeeShopLogic);
+  const handleKeyDown = useKeyHandler(handleMove, changeCharacter);
   const viewRef = useRef<View>(null);
 
-  const handleInteraction = () => {
-    const activeCharacter = characters[activeCharacterIndex];
-    const message = coffeeShopLogic.getInteractionMessage(
-      activeCharacter.x,
-      activeCharacter.y,
-      activeCharacter.role
-    );
-    setInteractionMessage(message);
-    setTimeout(() => setInteractionMessage(''), 2000);
-  };
-
-  const handleMove = (dx: number, dy: number) => {
-    setCharacters(prevCharacters => {
-      const updatedCharacters = [...prevCharacters];
-      const activeCharacter = updatedCharacters[activeCharacterIndex];
-      const newX = activeCharacter.x + dx;
-      const newY = activeCharacter.y + dy;
-      if (coffeeShopLogic.isValidMove(newX, newY)) {
-        activeCharacter.x = newX;
-        activeCharacter.y = newY;
-      }
-      return updatedCharacters;
-    });
-  };
-
-  const behavior= Platform.OS === 'web'? { onKeyDown: handleKeyDown} : {}
+  const behavior = Platform.OS === 'web' ? { onKeyDown: handleKeyDown } : {};
 
   useFocusEffect(
     useCallback(() => {
@@ -86,11 +22,6 @@ export const CoffeeShop: React.FC = () => {
     }, [])
   );
 
-  const onMove = (input: IReactNativeJoystickEvent) => {
-    handleMove(input.position.x, input.position.y);
-  };
-
-
   return (
     <View
       ref={viewRef}
@@ -98,37 +29,10 @@ export const CoffeeShop: React.FC = () => {
       {...behavior}
       tabIndex={0}
     >
-        <Canvas
-          style={styles.canvas}
-        >
-          {/* Draw Tiles */}
-          {coffeeShopLogic.layout.map((row, y) =>
-            row.map((tile, x) => (
-              <Rect
-                key={tile.id}
-                x={x * TILE_SIZE}
-                y={y * TILE_SIZE}
-                width={TILE_SIZE}
-                height={TILE_SIZE}
-                color={tile.color}
-              />
-            ))
-          )}
-          {/* Draw Characters */}
-          {characters.map((character) => (
-            <Rect
-              key={character.id}
-              x={character.x * TILE_SIZE}
-              y={character.y * TILE_SIZE}
-              width={TILE_SIZE}
-              height={TILE_SIZE}
-              color={character.color}
-            />
-          ))}
-        </Canvas>
-        {isDesktopBrowser && <Text>Desktop</Text>}
-        {isMobileBrowser && <Text>Mobile</Text>}
-        {(isMobile || isMobileBrowser) && <ReactNativeJoystick color="#06b6d4" radius={75} onMove={onMove} />}
+      <CanvasRenderer coffeeShopLogic={coffeeShopLogic} characters={characters} tileSize={TILE_SIZE} />
+      {isDesktopBrowser && <Text>Desktop</Text>}
+      {isMobileBrowser && <Text>Mobile</Text>}
+      {isMobile && <Text>Mobile</Text>}
     </View>
   );
 };
@@ -141,8 +45,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#f6f8fd',
   },
   canvas: {
-    width: TILE_SIZE * SHOP_WIDTH,
-    height: TILE_SIZE * SHOP_HEIGHT,
+    width: TILE_SIZE * SHOP_WIDTH_UNITS,
+    height: TILE_SIZE * SHOP_HEIGHT_UNITS,
     borderWidth: 1,
     borderColor: '#d1d5db'
   },
