@@ -8,6 +8,8 @@ import { SHOP_HEIGHT_UNITS, SHOP_WIDTH_UNITS, TILE_SIZE, useGameSetup } from './
 import { isDesktopBrowser, isMobileBrowser, isMobile } from './utils';
 import { ReactNativeJoystick } from "@/libs/react-native-joystick";
 import { useJoystick } from './game/useJoystick';
+import { useStudyRoom, } from './realtime/useStudyRoom';
+import { studyRoom } from "./realtime/colyseus";
 
 // const enableJoystick = isMobile || isMobileBrowser;
 const enableJoystick = true;
@@ -17,6 +19,8 @@ export const CoffeeShop: React.FC = () => {
   const handleKeyDown = useKeyHandler(handleMove, changeCharacter);
   const {onMoveJoystick} = useJoystick(handleMove);
   const viewRef = useRef<View>(null);
+  useStudyRoom();
+  const room = studyRoom.useColyseusRoom();
 
   const behavior = Platform.OS === 'web' ? { onKeyDown: handleKeyDown } : {};
 
@@ -26,6 +30,8 @@ export const CoffeeShop: React.FC = () => {
       return () => {};
     }, [])
   );
+
+  console.log({sessionId: room?.sessionId});
 
   return (
     <View

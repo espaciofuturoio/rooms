@@ -18,6 +18,7 @@
     "preset": "jest-expo"
   },
   "dependencies": {
+    "@colyseus/schema": "^2.0.36",
     "@expo/vector-icons": "^14.0.2",
     "@korsolutions/react-native-joystick": "^2.0.1",
     "@react-navigation/bottom-tabs": "^7.2.0",
@@ -25,6 +26,7 @@
     "@shopify/react-native-skia": "1.5.0",
     "babel-plugin-module-resolver": "^5.0.2",
     "babel-plugin-react-compiler": "^19.0.0-beta-e552027-20250112",
+    "colyseus.js": "^0.15.26",
     "expo": "~52.0.25",
     "expo-blur": "~14.0.2",
     "expo-constants": "~17.0.4",

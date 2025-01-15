@@ -6,7 +6,8 @@
 		"paths": {
 			"@/*": ["./*"]
 		},
-		"skipLibCheck": true
+		"skipLibCheck": true,
+    "experimentalDecorators": true,
 	},
   "include": [
     "**/*.ts",
