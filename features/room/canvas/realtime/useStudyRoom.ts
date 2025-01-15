@@ -43,6 +43,8 @@ export const useStudyRoom = () => {
 		};
 	}, []);
 
+	// TODO: improve reactivity to avoid re-render
+	// Players are not reactive???
 	const state = useColyseusState();
 
 	const sessionId = useColyseusRoom()?.sessionId;
@@ -65,5 +67,5 @@ export const useStudyRoom = () => {
 	console.log("layout", layout2D);
 	console.log("players", players, state);
 
-	return { sessionId, widthUnits, heightUnits, layout: layout2D, players, movePlayer };
+	return { sessionId, widthUnits, heightUnits, layout: layout2D, players, movePlayer, state };
 };

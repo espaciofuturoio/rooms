@@ -1,4 +1,4 @@
-import type { Schema } from "@colyseus/schema";
+import { Schema } from "@colyseus/schema";
 import { Client, type Room } from "colyseus.js";
 import { useSyncExternalStore } from "react";
 
@@ -8,7 +8,6 @@ export const colyseus = <S = Schema>(
   endpoint: string,
   schema?: new (...args: unknown[]) => S
 ) => {
-   "use no memo"
   const client = new Client(endpoint);
 
   const roomStore = store<Room<S> | undefined>(undefined);
