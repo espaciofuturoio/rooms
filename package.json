@@ -10,16 +10,23 @@
     "web": "expo start --web",
     "test": "jest --watchAll",
     "lint": "expo lint",
-    "postinstall": "bunx setup-skia-web"
+    "postinstall": "bunx setup-skia-web",
+    "build:web": "expo export -p web",
+    "serve:web": "bunx serve dist"
   },
   "jest": {
     "preset": "jest-expo"
   },
   "dependencies": {
+    "@colyseus/schema": "^2.0.36",
     "@expo/vector-icons": "^14.0.2",
+    "@korsolutions/react-native-joystick": "^2.0.1",
     "@react-navigation/bottom-tabs": "^7.2.0",
     "@react-navigation/native": "^7.0.14",
     "@shopify/react-native-skia": "1.5.0",
+    "babel-plugin-module-resolver": "^5.0.2",
+    "babel-plugin-react-compiler": "^19.0.0-beta-e552027-20250112",
+    "colyseus.js": "^0.15.26",
     "expo": "~52.0.25",
     "expo-blur": "~14.0.2",
     "expo-constants": "~17.0.4",
@@ -33,6 +40,7 @@
     "expo-system-ui": "~4.0.7",
     "expo-web-browser": "~14.0.2",
     "react": "18.3.1",
+    "react-compiler-runtime": "^19.0.0-beta-e552027-20250112",
     "react-dom": "18.3.1",
     "react-native": "0.76.6",
     "react-native-gesture-handler": "~2.20.2",

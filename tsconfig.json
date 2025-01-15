@@ -6,12 +6,20 @@
 		"paths": {
 			"@/*": ["./*"]
 		},
-		"skipLibCheck": true
+		"skipLibCheck": true,
+    "experimentalDecorators": true,
 	},
   "include": [
     "**/*.ts",
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "**/node_modules/*",
+    "**/node_modules/**",
+	"./labs/**",
+	"./app-example/**"
   ]
 }
