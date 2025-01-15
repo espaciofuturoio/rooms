@@ -5,6 +5,10 @@ import type { CoffeeShopLogic } from './CoffeeShopLogic';
 export const useCharacterMovement = (initialCharacters: Player[], coffeeShopLogic: CoffeeShopLogic) => {
   const [activeCharacterIndex, setActiveCharacterIndex] = useState(0);
   const [characters, setCharacters] = useState<Player[]>(initialCharacters);
+  
+  const handleStop = useCallback(() => {
+    console.log('handleStop');
+  }, []);
 
   const handleMove = useCallback((dx: number, dy: number) => {
     setCharacters(prevCharacters => {
@@ -24,5 +28,5 @@ export const useCharacterMovement = (initialCharacters: Player[], coffeeShopLogi
     setActiveCharacterIndex((prevIndex) => (prevIndex + 1) % characters.length);
   }, [characters.length]);
 
-  return { characters, handleMove, changeCharacter };
+  return { characters, handleMove, changeCharacter, handleStop };
 }; 

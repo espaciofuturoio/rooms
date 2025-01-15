@@ -6,11 +6,16 @@ import { useKeyHandler } from './game/useKeyHandler';
 import { CanvasRenderer } from './CanvasRenderer';
 import { SHOP_HEIGHT_UNITS, SHOP_WIDTH_UNITS, TILE_SIZE, useGameSetup } from './game/useGameSetup';
 import { isDesktopBrowser, isMobileBrowser, isMobile } from './utils';
+import { ReactNativeJoystick } from "@/libs/react-native-joystick";
+import { useJoystick } from './game/useJoystick';
 
+// const enableJoystick = isMobile || isMobileBrowser;
+const enableJoystick = true;
 export const CoffeeShop: React.FC = () => {
   const { coffeeShopLogic, initialCharacters, TILE_SIZE } = useGameSetup();
-  const { characters, handleMove, changeCharacter } = useCharacterMovement(initialCharacters, coffeeShopLogic);
+  const { characters, handleMove, changeCharacter, handleStop } = useCharacterMovement(initialCharacters, coffeeShopLogic);
   const handleKeyDown = useKeyHandler(handleMove, changeCharacter);
+  const {onMoveJoystick} = useJoystick(handleMove);
   const viewRef = useRef<View>(null);
 
   const behavior = Platform.OS === 'web' ? { onKeyDown: handleKeyDown } : {};
@@ -30,9 +35,19 @@ export const CoffeeShop: React.FC = () => {
       tabIndex={0}
     >
       <CanvasRenderer coffeeShopLogic={coffeeShopLogic} characters={characters} tileSize={TILE_SIZE} />
-      {isDesktopBrowser && <Text>Desktop</Text>}
+      {isDesktopBrowser && (
+      <>
+        <Text>Desktop: You can use Joystick or Arrow Keys to move around</Text>
+        <Text>Arrow Key Codes:</Text>
+        <Text>↑</Text>
+        <Text>↓</Text>
+        <Text>←</Text>
+        <Text>→</Text>
+      </>
+    )}
       {isMobileBrowser && <Text>Mobile</Text>}
       {isMobile && <Text>Mobile</Text>}
+      {enableJoystick && <ReactNativeJoystick color="#06b6d4" radius={75} onMove={onMoveJoystick} onStop={handleStop} />}
     </View>
   );
 };

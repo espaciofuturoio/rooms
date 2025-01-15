@@ -86,7 +86,7 @@ export const ReactNativeJoystick = ({ onStart, onMove, onStop, color = "#000000"
   const panGesture = Gesture.Pan()
     .onStart(handleTouchStart).runOnJS(true)
     .onEnd(handleTouchEnd).runOnJS(true)
-    .onTouchesMove(handleTouchMove).runOnJS(true);
+    .onTouchesMove(handleTouchMove).runOnJS(true)
 
   const styles = useMemo(
     () =>

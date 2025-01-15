@@ -2,7 +2,9 @@ import { useMemo } from 'react';
 import { CoffeeShopLogic } from './CoffeeShopLogic';
 import { Player } from './Player';
 
-export const TILE_SIZE = 32;
+import { isMobile, isMobileBrowser } from '../utils';
+
+export const TILE_SIZE = isMobile || isMobileBrowser ? 16 : 32;
 export const SHOP_WIDTH_UNITS = 20;
 export const SHOP_HEIGHT_UNITS = 15;
 
