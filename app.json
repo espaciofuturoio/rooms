@@ -32,12 +32,18 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
-      ]
+      ],
+      [
+				"expo-asset",
+				{
+					"assets": ["./assets/"]
+				}
+			]
     ],
     "experiments": {
-			"typedRoutes": true,
-			"reactCompiler": false,
-			"reactCanary": false
-		}
+      "typedRoutes": true,
+      "reactCompiler": false,
+      "reactCanary": false
+    }
   }
 }
