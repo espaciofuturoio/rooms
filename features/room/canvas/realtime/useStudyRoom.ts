@@ -64,8 +64,12 @@ export const useStudyRoom = () => {
 		sendMessage("move", { dx, dy });
 	};
 
+	const stopPlayer = () => {
+		console.log("stopPlayer");
+	};
+
 	console.log("layout", layout2D);
 	console.log("players", players, state);
 
-	return { sessionId, widthUnits, heightUnits, layout: layout2D, players, movePlayer, state };
+	return { sessionId, widthUnits, heightUnits, layout: layout2D, players, movePlayer, stopPlayer, state };
 };

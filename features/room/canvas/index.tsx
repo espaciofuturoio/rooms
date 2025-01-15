@@ -1,23 +1,20 @@
 import { useCallback, useRef } from 'react';
 import { View, StyleSheet, Platform, Text } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
-import { useCharacterMovement } from './game/useCharacterMovement';
 import { useKeyHandler } from './game/useKeyHandler';
 import { CanvasRenderer } from './CanvasRenderer';
-import { useGameSetup } from './game/useGameSetup';
 import { isDesktopBrowser, isMobileBrowser, isMobile } from './utils';
 import { ReactNativeJoystick } from "@/libs/react-native-joystick";
 import { useJoystick } from './game/useJoystick';
 import { useStudyRoom } from './realtime/useStudyRoom';
 
-// const enableJoystick = isMobile || isMobileBrowser;
-const enableJoystick = true;
+const enableJoystick = isMobile || isMobileBrowser;
+// const enableJoystick = true;
+
 export const CoffeeShop: React.FC = () => {
-  const {sessionId, widthUnits, heightUnits, layout, players, movePlayer} = useStudyRoom();
-  const { coffeeShopLogic, initialCharacters, TILE_SIZE } = useGameSetup();
-  const { handleMove, handleStop } = useCharacterMovement(initialCharacters, coffeeShopLogic);
+  const {sessionId, widthUnits, heightUnits, layout, players, movePlayer, stopPlayer} = useStudyRoom();
   const handleKeyDown = useKeyHandler(movePlayer);
-  const {onMoveJoystick} = useJoystick(handleMove);
+  const {onMoveJoystick} = useJoystick(movePlayer);
   const viewRef = useRef<View>(null);
 
   const behavior = Platform.OS === 'web' ? { onKeyDown: handleKeyDown } : {};
@@ -40,7 +37,7 @@ export const CoffeeShop: React.FC = () => {
       {...behavior}
       tabIndex={0}
     >
-      <CanvasRenderer layout={layout} players={players} tileSize={TILE_SIZE} widthUnits={widthUnits} heightUnits={heightUnits} />
+      <CanvasRenderer layout={layout} players={players} widthUnits={widthUnits} heightUnits={heightUnits} />
       {isDesktopBrowser && (
       <>
         <Text>Desktop: You can use Joystick or Arrow Keys to move around</Text>
@@ -53,7 +50,7 @@ export const CoffeeShop: React.FC = () => {
     )}
       {isMobileBrowser && <Text>Mobile</Text>}
       {isMobile && <Text>Mobile</Text>}
-      {enableJoystick && <ReactNativeJoystick color="#06b6d4" radius={75} onMove={onMoveJoystick} onStop={handleStop} />}
+      {enableJoystick && <ReactNativeJoystick color="#06b6d4" radius={75} onMove={onMoveJoystick} onStop={stopPlayer} />}
     </View>
   );
 };
