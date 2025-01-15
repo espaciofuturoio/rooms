@@ -8,6 +8,7 @@ export const colyseus = <S = Schema>(
   endpoint: string,
   schema?: new (...args: unknown[]) => S
 ) => {
+   "use no memo"
   const client = new Client(endpoint);
 
   const roomStore = store<Room<S> | undefined>(undefined);

@@ -1,19 +1,17 @@
-import { useEffect, useState } from "react";
-import { studyRoom } from "./colyseus";
-import type { Room } from "colyseus.js";
-import type { StudyRoomState } from "./StudyRoomState.schema";
-
+import { useEffect } from "react";
+import { connectToColyseus, disconnectFromColyseus, useColyseusRoom, useColyseusState } from "./colyseus";
 export const useStudyRoom = () => {
-  const room = studyRoom.useColyseusRoom()
 	useEffect(() => {
 		(async () => {
-			await studyRoom.connectToColyseus("study-room");
+			await connectToColyseus("study-room");
 		})();
 
 		return () => {
-			studyRoom.disconnectFromColyseus();
+			disconnectFromColyseus();
 		};
 	}, []);
 
-  return { room };
+	const sessionId = useColyseusRoom()?.sessionId;
+	const state = useColyseusState(state => state.mySynchronizedProperty);
+	return { sessionId, state };
 };
