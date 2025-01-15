@@ -1,6 +1,6 @@
 import type React from 'react';
 import { useCallback, useState, useRef } from 'react';
-import { View, StyleSheet, Platform } from 'react-native';
+import { View, StyleSheet, Platform, Text } from 'react-native';
 import { 
   Canvas, 
   Rect,
@@ -8,11 +8,16 @@ import {
 import { CoffeeShopLogic } from './game/CoffeeShopLogic';
 import { Player } from './game/Player';
 import { useFocusEffect } from '@react-navigation/native';
-
+import { ReactNativeJoystick } from "@/libs/react-native-joystick";
 
 const TILE_SIZE = 32;
 const SHOP_WIDTH = 20;
 const SHOP_HEIGHT = 15;
+
+const isWeb = Platform.OS === 'web';
+const isMobile = Platform.OS === 'ios' || Platform.OS === 'android';
+const isMobileBrowser = isWeb && /Mobi|Android/i.test(navigator.userAgent);
+const isDesktopBrowser = isWeb && !isMobileBrowser;
 
 const initialCharacters = [
   new Player({x: 5, y: 5, color: '#0000FF', role: 'Barista', id: '1'}),
@@ -116,6 +121,9 @@ export const CoffeeShop: React.FC = () => {
             />
           ))}
         </Canvas>
+        {isDesktopBrowser && <Text>Desktop</Text>}
+        {isMobileBrowser && <Text>Mobile</Text>}
+        {(isMobile || isMobileBrowser) && <ReactNativeJoystick color="#06b6d4" radius={75} onMove={(data) => console.log(data)} />}
     </View>
   );
 };

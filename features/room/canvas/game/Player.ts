@@ -15,7 +15,7 @@ export class Player {
     y: number;
     color: string;
     role: string;
-    idw: string;
+    id: string;
   }) {
     this.id = id;
     this.x = x;
