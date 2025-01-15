@@ -8,7 +8,7 @@ import {
 import { CoffeeShopLogic } from './game/CoffeeShopLogic';
 import { Player } from './game/Player';
 import { useFocusEffect } from '@react-navigation/native';
-import { ReactNativeJoystick } from "@/libs/react-native-joystick";
+import { IReactNativeJoystickEvent, ReactNativeJoystick } from "@/libs/react-native-joystick";
 
 const TILE_SIZE = 32;
 const SHOP_WIDTH = 20;
@@ -86,6 +86,11 @@ export const CoffeeShop: React.FC = () => {
     }, [])
   );
 
+  const onMove = (input: IReactNativeJoystickEvent) => {
+    handleMove(input.position.x, input.position.y);
+  };
+
+
   return (
     <View
       ref={viewRef}
@@ -123,7 +128,7 @@ export const CoffeeShop: React.FC = () => {
         </Canvas>
         {isDesktopBrowser && <Text>Desktop</Text>}
         {isMobileBrowser && <Text>Mobile</Text>}
-        {(isMobile || isMobileBrowser) && <ReactNativeJoystick color="#06b6d4" radius={75} onMove={(data) => console.log(data)} />}
+        {(isMobile || isMobileBrowser) && <ReactNativeJoystick color="#06b6d4" radius={75} onMove={onMove} />}
     </View>
   );
 };
