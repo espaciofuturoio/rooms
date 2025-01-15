@@ -13,13 +13,12 @@ import { useStudyRoom } from './realtime/useStudyRoom';
 // const enableJoystick = isMobile || isMobileBrowser;
 const enableJoystick = true;
 export const CoffeeShop: React.FC = () => {
+  const {sessionId, widthUnits, heightUnits, layout, players, movePlayer} = useStudyRoom();
   const { coffeeShopLogic, initialCharacters, TILE_SIZE } = useGameSetup();
-  const { characters, handleMove, changeCharacter, handleStop } = useCharacterMovement(initialCharacters, coffeeShopLogic);
-  const handleKeyDown = useKeyHandler(handleMove, changeCharacter);
+  const { handleMove, handleStop } = useCharacterMovement(initialCharacters, coffeeShopLogic);
+  const handleKeyDown = useKeyHandler(movePlayer);
   const {onMoveJoystick} = useJoystick(handleMove);
   const viewRef = useRef<View>(null);
-
-  const {sessionId, widthUnits, heightUnits, layout, players} = useStudyRoom();
 
   const behavior = Platform.OS === 'web' ? { onKeyDown: handleKeyDown } : {};
 
@@ -41,7 +40,7 @@ export const CoffeeShop: React.FC = () => {
       {...behavior}
       tabIndex={0}
     >
-      <CanvasRenderer layout={layout} players={[]} tileSize={TILE_SIZE} widthUnits={widthUnits} heightUnits={heightUnits} />
+      <CanvasRenderer layout={layout} players={players} tileSize={TILE_SIZE} widthUnits={widthUnits} heightUnits={heightUnits} />
       {isDesktopBrowser && (
       <>
         <Text>Desktop: You can use Joystick or Arrow Keys to move around</Text>

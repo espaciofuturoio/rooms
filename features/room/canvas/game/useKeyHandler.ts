@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 
-export const useKeyHandler = (handleMove: (dx: number, dy: number) => void, changeCharacter: () => void) => {
+export const useKeyHandler = (handleMove: (dx: number, dy: number) => void, interact?: () => void) => {
   return useCallback((event: React.KeyboardEvent) => {
     console.log(`Key pressed: ${event.key}`);
     const key = event.key;
@@ -19,8 +19,8 @@ export const useKeyHandler = (handleMove: (dx: number, dy: number) => void, chan
         break;
       case 'x':
       case 'X':
-        changeCharacter();
+        interact?.();
         break;
     }
-  }, [handleMove, changeCharacter]);
+  }, [handleMove, interact]);
 }; 

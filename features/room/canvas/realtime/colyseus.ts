@@ -8,4 +8,5 @@ export const {
     disconnectFromColyseus,
     useColyseusRoom,
     useColyseusState,
+    sendMessage
   } = colyseus<StudyRoomState>(serverWS)

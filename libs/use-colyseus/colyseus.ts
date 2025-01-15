@@ -99,6 +99,12 @@ export const colyseus = <S = Schema>(
     } catch {}
   };
 
+  const sendMessage = async <T>(messageType: string, data: T) => {
+    const room = roomStore.get()
+    if (!room) return
+    room.send(messageType, data)
+  }
+
   const useColyseusRoom = () => {
     const subscribe = (callback: () => void) =>
       roomStore.subscribe(() => callback());
@@ -136,5 +142,6 @@ export const colyseus = <S = Schema>(
     disconnectFromColyseus,
     useColyseusRoom,
     useColyseusState,
+    sendMessage
   };
 };

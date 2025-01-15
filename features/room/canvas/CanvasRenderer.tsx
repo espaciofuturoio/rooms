@@ -1,17 +1,16 @@
 import { Canvas, Rect } from '@shopify/react-native-skia';
-import type { TileLayout } from './realtime/StudyRoomState.schema';
-import type { Player } from './game/Player';
+import type { PlayerLayout, TileLayout } from './realtime/StudyRoomState.schema';
 
 interface CanvasRendererProps {
   layout: TileLayout[][];
-  players: TileLayout[];
+  players: Array<[string, PlayerLayout]>;
   tileSize: number;
   widthUnits: number | undefined;
   heightUnits: number | undefined;
 }
 
 export const CanvasRenderer: React.FC<CanvasRendererProps> = ({ layout, players, tileSize, widthUnits, heightUnits }) => {
-  if (!widthUnits || !heightUnits) return null;
+  if (!widthUnits || !heightUnits || !layout || !players) return null;
   return (
     <Canvas style={{ width: widthUnits * tileSize, height: heightUnits * tileSize }}>
       {/* Draw Tiles */}
@@ -27,15 +26,15 @@ export const CanvasRenderer: React.FC<CanvasRendererProps> = ({ layout, players,
           />
         ))
       )}
-      {/* Draw Characters */}
-      {players.map((character) => (
+      {/* Draw Players */}
+      {players.map(([id, player]) => (
         <Rect
-          key={character.id}
-          x={character.x * tileSize}
-          y={character.y * tileSize}
+          key={id}
+          x={player.x * tileSize}
+          y={player.y * tileSize}
           width={tileSize}
           height={tileSize}
-          color={character.color}
+          color={player.color}
         />
       ))}
     </Canvas>
