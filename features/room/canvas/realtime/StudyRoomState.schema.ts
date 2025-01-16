@@ -19,7 +19,10 @@ export type TileType =
   | "chairLeftRed"
   | "tableWCloth"
   | "tvStand"
-  | "tvStandWSwitch";
+  | "tvStandWSwitch"
+  | "sofa"
+  | "rug";
+
 export type PlayerDirection = "up" | "down" | "left" | "right";
 export type PlayerAction = "idle" | "walk";
 export const FloorColor = "#F5DEB3";
@@ -53,25 +56,27 @@ const generateLayout = (
   widthUnits: number,
   heightUnits: number,
 ): TileLayout[][] => {
-  // Helper to generate random integer within [min, max]
   const randInt = (min: number, max: number): number =>
     Math.floor(Math.random() * (max - min + 1)) + min;
 
-  // Create a tile
   const createTile = (type: TileType, x: number, y: number, color: string) => ({
     id: `${type}-${x}-${y}`,
     type,
     color,
   });
 
-  // Start by filling everything with “floor”
+  // Fill everything with “floor”
   const initialLayout = Array.from({ length: heightUnits }, (_, y) =>
     Array.from({ length: widthUnits }, (_, x) =>
       createTile("floor", x, y, FloorColor),
     ),
   );
 
-  // Add walls around the border
+  // Helper to check if a tile is free (i.e., is "floor")
+  const isTileFree = (layout: TileLayout[][], x: number, y: number): boolean =>
+    !!layout[y]?.[x] && layout[y][x].type === "floor";
+
+  // 1. Walls around the border
   const addWalls = (layout: TileLayout[][]): TileLayout[][] =>
     layout.map((row, y) =>
       row.map((tile, x) => {
@@ -81,34 +86,69 @@ const generateLayout = (
       }),
     );
 
-  // Decorate the top row with a counter, coffee machine, and cash register
-  const decorateTop = (layout: TileLayout[][]): TileLayout[][] => {
+  // 2. Place TV stands inside the top corners first
+  //    so we don't accidentally override them with the counter.
+  const placeTVs = (layout: TileLayout[][]): TileLayout[][] => {
     const result = layout.map((row) => [...row]);
 
-    // Place a counter along row 2
-    for (let x = 2; x < widthUnits - 2; x++) {
-      result[2][x] = createTile("counter", x, 2, "#D2691E");
+    // Top-left corner (row=1, col=1)
+    if (isTileFree(result, 1, 1)) {
+      result[1][1] = createTile("tvStand", 1, 1, "#2F4F4F");
     }
 
-    // Coffee machine near left side
-    if (widthUnits > 4 && heightUnits > 4) {
-      result[3][3] = createTile("coffee_machine", 3, 3, "#4682B4");
-      result[3][widthUnits - 4] = createTile(
-        "cash_register",
-        widthUnits - 4,
-        3,
-        "#DAA520",
+    // Top-right corner (row=1, col = widthUnits-2)
+    if (isTileFree(result, widthUnits - 2, 1)) {
+      result[1][widthUnits - 2] = createTile(
+        "tvStandWSwitch",
+        widthUnits - 2,
+        1,
+        "#696969",
       );
     }
 
     return result;
   };
 
-  // Helper to check if a tile is still “floor” (i.e., free)
-  const isTileFree = (layout: TileLayout[][], x: number, y: number): boolean =>
-    !!layout[y]?.[x] && layout[y][x].type === "floor";
+  // 3. Decorate a more “café-like” counter a bit further down
+  //    Doing it from row=3 so it doesn't block the TVs in the top corners.
+  const decorateCounter = (layout: TileLayout[][]): TileLayout[][] => {
+    const result = layout.map((row) => [...row]);
 
-  // Place potted plants near the bottom corners (inside the walls)
+    // Horizontal segment (row=3)
+    if (heightUnits > 5) {
+      for (let x = 2; x < widthUnits - 2; x++) {
+        if (isTileFree(result, x, 3)) {
+          result[3][x] = createTile("counter", x, 3, "#D2B48C");
+        }
+      }
+
+      // Vertical segment to form an L shape (down from row=3 to row=5, near x=2)
+      for (let y = 3; y <= Math.min(heightUnits - 2, 5); y++) {
+        if (isTileFree(result, 2, y)) {
+          result[y][2] = createTile("counter", 2, y, "#D2B48C");
+        }
+      }
+
+      // Place coffee machine near the left side of the counter
+      if (isTileFree(result, 3, 3)) {
+        result[3][3] = createTile("coffee_machine", 3, 3, "#4682B4");
+      }
+
+      // Place cash register near the right side
+      if (isTileFree(result, widthUnits - 4, 3)) {
+        result[3][widthUnits - 4] = createTile(
+          "cash_register",
+          widthUnits - 4,
+          3,
+          "#DAA520",
+        );
+      }
+    }
+
+    return result;
+  };
+
+  // 4. Place potted plants near bottom corners
   const placePottedPlants = (layout: TileLayout[][]): TileLayout[][] => {
     const result = layout.map((row) => [...row]);
     const bottomY = heightUnits - 3;
@@ -133,32 +173,13 @@ const generateLayout = (
     return result;
   };
 
-  // Place TV stands inside the top corners
-  const placeTVs = (layout: TileLayout[][]): TileLayout[][] => {
-    const result = layout.map((row) => [...row]);
-
-    if (isTileFree(result, 1, 1)) {
-      result[1][1] = createTile("tvStand", 1, 1, "#2F4F4F");
-    }
-    if (isTileFree(result, widthUnits - 2, 1)) {
-      result[1][widthUnits - 2] = createTile(
-        "tvStandWSwitch",
-        widthUnits - 2,
-        1,
-        "#696969",
-      );
-    }
-
-    return result;
-  };
-
-  // Place tables randomly, each with at least one left-chair on the right side,
-  // and one right-chair on the left side
+  // 5. Always place at least two tables (2–4),
+  //    each with a matching pair of chairs on left & right sides.
   const placeTablesAndChairs = (layout: TileLayout[][]): TileLayout[][] => {
     const result = layout.map((row) => [...row]);
-    const tableCount = randInt(1, 3);
-    const tableTypes: TileType[] = ["tableWCloth", "table"];
 
+    const tableCount = randInt(2, 4);
+    const tableTypes: TileType[] = ["tableWCloth", "table"];
     let placedTables = 0;
 
     while (placedTables < tableCount) {
@@ -166,25 +187,21 @@ const generateLayout = (
       const y = randInt(2, heightUnits - 3);
 
       if (isTileFree(result, x, y)) {
-        // Randomly choose one of the two table types
         const chosenTable = tableTypes[randInt(0, tableTypes.length - 1)];
         result[y][x] = createTile(chosenTable, x, y, "#A0522D");
 
-        // Chairs that face left on the right side
         const chairLeftTypes: TileType[] = ["chairLeftGreen", "chairLeftRed"];
-        // Chairs that face right on the left side
         const chairRightTypes: TileType[] = [
           "chairRightGreen",
           "chairRightRed",
         ];
 
-        // Place a left-facing chair on the right side (x+1, y)
         if (isTileFree(result, x + 1, y)) {
           const leftChair =
             chairLeftTypes[randInt(0, chairLeftTypes.length - 1)];
           result[y][x + 1] = createTile(leftChair, x + 1, y, "#228B22");
         }
-        // Place a right-facing chair on the left side (x-1, y)
+
         if (isTileFree(result, x - 1, y)) {
           const rightChair =
             chairRightTypes[randInt(0, chairRightTypes.length - 1)];
@@ -194,25 +211,49 @@ const generateLayout = (
         placedTables++;
       }
     }
+
     return result;
   };
 
-  // Compose the final layout
-  // Apply each transformation in sequence to the layout
+  // 6. Add some sofas and rugs for a more home-like feel
+  const placeSofasAndRugs = (layout: TileLayout[][]): TileLayout[][] => {
+    const result = layout.map((row) => [...row]);
+
+    // Place 1–2 sofas
+    const sofaCount = randInt(1, 2);
+    for (let i = 0; i < sofaCount; i++) {
+      const x = randInt(2, widthUnits - 3);
+      const y = randInt(2, heightUnits - 3);
+      if (isTileFree(result, x, y)) {
+        result[y][x] = createTile("sofa", x, y, "#B5651D");
+      }
+    }
+
+    // Place a rug
+    const rugX = randInt(2, widthUnits - 3);
+    const rugY = randInt(2, heightUnits - 3);
+    if (isTileFree(result, rugX, rugY)) {
+      result[rugY][rugX] = createTile("rug", rugX, rugY, "#FFD700");
+    }
+
+    return result;
+  };
+
+  // Reorder our transformations so the TV stands are placed
+  // before the counter, preventing the counter from blocking them
   const transformations = [
     addWalls,
-    decorateTop,
+    placeTVs, // (2) place TVs early
+    decorateCounter, // (3) place counters further down
     placePottedPlants,
-    placeTVs,
     placeTablesAndChairs,
+    placeSofasAndRugs,
   ];
 
-  const finalLayout = transformations.reduce(
+  return transformations.reduce(
     (acc, transform) => transform(acc),
     initialLayout,
   );
-
-  return finalLayout;
 };
 
 class Tile extends Schema {

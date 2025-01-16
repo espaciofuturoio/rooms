@@ -1,10 +1,10 @@
 import { WithSkiaWeb } from "@shopify/react-native-skia/lib/module/web";
-import React from "react";
-import { Text } from "react-native";
+import { LoadingAnimation } from "@/components/base/LoadingAnimation";
 
 export const SkiaCanvasRoomLoader = () => (
   <WithSkiaWeb
     getComponent={() => import("./canvas")}
-    fallback={<Text>Loading Skia...</Text>}
+    fallback={<LoadingAnimation />}
   />
 );
+

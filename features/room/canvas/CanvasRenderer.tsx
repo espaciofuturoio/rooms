@@ -8,15 +8,14 @@ import {
   useAnimatedImageValue,
   useImage,
 } from "@shopify/react-native-skia";
-import { memo } from "react";
-import { Platform } from "react-native";
+import { ActivityIndicator, Platform, Text, View } from "react-native";
 import type { SharedValue } from "react-native-reanimated";
 import {
   FloorColor,
   type PlayerLayout,
   type TileLayout,
 } from "./realtime/StudyRoomState.schema";
-import { isMobileBrowser } from "./utils";
+import { isDesktopBrowser, isMobileBrowser } from "./utils";
 import { isMobile } from "./utils";
 
 interface CanvasRendererProps {
@@ -115,6 +114,16 @@ const tvStandWSwitchAsset =
   Platform.OS === "web"
     ? require("@/assets/images/sprites/furniture/32x32_tvstand_wswitch.png").uri
     : require("@/assets/images/sprites/furniture/32x32_tvstand_wswitch.png");
+
+const sofaAsset =
+  Platform.OS === "web"
+    ? require("@/assets/images/sprites/furniture/sofa.png").uri
+    : require("@/assets/images/sprites/furniture/sofa.png");
+
+const rugAsset =
+  Platform.OS === "web"
+    ? require("@/assets/images/sprites/furniture/rug.png").uri
+    : require("@/assets/images/sprites/furniture/rug.png");
 
 // Simple hash function to generate a number from a string
 const simpleHash = (str: string): number => {
@@ -251,6 +260,8 @@ const useFurnitureImages = () => {
   const tableWCloth = useImage(tableWClothAsset);
   const tvStand = useImage(tvStandAsset);
   const tvStandWSwitch = useImage(tvStandWSwitchAsset);
+  const sofa = useImage(sofaAsset);
+  const rug = useImage(rugAsset);
   if (
     !pottedPlantBeige ||
     !pottedPlantRed ||
@@ -261,7 +272,9 @@ const useFurnitureImages = () => {
     !table ||
     !tableWCloth ||
     !tvStand ||
-    !tvStandWSwitch
+    !tvStandWSwitch ||
+    !sofa ||
+    !rug
   ) {
     console.log("No image found for furniture");
     return null;
@@ -277,6 +290,8 @@ const useFurnitureImages = () => {
     tableWCloth,
     tvStand,
     tvStandWSwitch,
+    sofa,
+    rug,
   };
 };
 
@@ -291,6 +306,8 @@ const furniture = [
   "tvStand",
   "tvStandWSwitch",
   "table",
+  "sofa",
+  "rug",
 ];
 
 export const CanvasRenderer: React.FC<CanvasRendererProps> = ({
@@ -311,7 +328,18 @@ export const CanvasRenderer: React.FC<CanvasRendererProps> = ({
     !layout ||
     !players
   )
-    return null;
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          padding: 20,
+        }}
+      >
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
   const staticPlayers = players.filter(
     ([_, player]) => player.action === "idle",
   );
@@ -325,6 +353,7 @@ export const CanvasRenderer: React.FC<CanvasRendererProps> = ({
         style={{
           width: widthUnits * TILE_SIZE,
           height: heightUnits * TILE_SIZE,
+          userSelect: "none",
         }}
       >
         {layout.map((row, y) =>
@@ -383,6 +412,12 @@ export const CanvasRenderer: React.FC<CanvasRendererProps> = ({
           />
         ))}
       </Canvas>
+      {isDesktopBrowser && (
+        <View style={{ padding: 20 }}>
+          <Text>You can use ↑ ↓ ← → to move around</Text>
+        </View>
+      )}
     </>
   );
 };
+

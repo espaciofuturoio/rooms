@@ -1,6 +1,5 @@
 import { ReactNativeJoystick } from "@/libs/react-native-joystick";
-import { useFocusEffect } from "@react-navigation/native";
-import { useCallback, useRef } from "react";
+import { useEffect, useRef } from "react";
 import {
   Platform,
   StyleSheet,
@@ -12,10 +11,10 @@ import { CanvasRenderer } from "./CanvasRenderer";
 import { useJoystick } from "./game/useJoystick";
 import { useKeyHandler } from "./game/useKeyHandler";
 import { useStudyRoom } from "./realtime/useStudyRoom";
-import { isDesktopBrowser, isMobile, isMobileBrowser } from "./utils";
+import { isMobile, isMobileBrowser } from "./utils";
+import { LoadingAnimation } from "@/components/base/LoadingAnimation";
 
 const enableJoystick = isMobile || isMobileBrowser;
-// const enableJoystick = true;
 
 export const CoffeeShop: React.FC = () => {
   const {
@@ -39,12 +38,9 @@ export const CoffeeShop: React.FC = () => {
       ? { onKeyDown: handleKeyPress, onKeyUp: handleKeyUp }
       : {};
 
-  useFocusEffect(
-    useCallback(() => {
-      viewRef.current?.focus();
-      return () => {};
-    }, []),
-  );
+  useEffect(() => {
+    viewRef.current?.focus();
+  }, [sessionId, layout]);
 
   const handleXButtonPress = () => {
     console.log("X Button pressed");
@@ -54,7 +50,7 @@ export const CoffeeShop: React.FC = () => {
     console.log("Y Button pressed");
   };
 
-  if (!sessionId || !layout) return <Text>Loading...</Text>;
+  if (!sessionId || !layout) return <LoadingAnimation />;
 
   return (
     <View ref={viewRef} style={styles.container} {...behavior} tabIndex={0}>
@@ -64,7 +60,6 @@ export const CoffeeShop: React.FC = () => {
         widthUnits={widthUnits}
         heightUnits={heightUnits}
       />
-      {isDesktopBrowser && <Text>You can use ↑ ↓ ← → to move around</Text>}
       {enableJoystick && (
         <>
           <View style={{ position: "absolute", bottom: 20, left: 20 }}>
@@ -105,6 +100,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#f6f8fd",
+    userSelect: "none",
   },
   buttonContainer: {
     position: "absolute",
