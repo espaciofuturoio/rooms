@@ -61,6 +61,59 @@ const idleRight =
     ? require("@/assets/images/sprites/boy/idle-right.png").uri
     : require("@/assets/images/sprites/boy/idle-right.png");
 
+const pottedPlantBeigeAsset =
+  Platform.OS === "web"
+    ? require("@/assets/images/sprites/furniture/16x32_pottedplant_beige.png")
+        .uri
+    : require("@/assets/images/sprites/furniture/16x32_pottedplant_beige.png");
+
+const pottedPlantRedAsset =
+  Platform.OS === "web"
+    ? require("@/assets/images/sprites/furniture/16x32_pottedplant_red.png").uri
+    : require("@/assets/images/sprites/furniture/16x32_pottedplant_red.png");
+
+const chairLeftGreenAsset =
+  Platform.OS === "web"
+    ? require("@/assets/images/sprites/furniture/32x32_chair_left_green.png")
+        .uri
+    : require("@/assets/images/sprites/furniture/32x32_chair_left_green.png");
+
+const chairLeftRedAsset =
+  Platform.OS === "web"
+    ? require("@/assets/images/sprites/furniture/32x32_chair_left_red.png").uri
+    : require("@/assets/images/sprites/furniture/32x32_chair_left_red.png");
+
+const chairRightGreenAsset =
+  Platform.OS === "web"
+    ? require("@/assets/images/sprites/furniture/32x32_chair_right_green.png")
+        .uri
+    : require("@/assets/images/sprites/furniture/32x32_chair_right_green.png");
+
+const chairRightRedAsset =
+  Platform.OS === "web"
+    ? require("@/assets/images/sprites/furniture/32x32_chair_right_red.png").uri
+    : require("@/assets/images/sprites/furniture/32x32_chair_right_red.png");
+
+const tableAsset =
+  Platform.OS === "web"
+    ? require("@/assets/images/sprites/furniture/32x32_table.png").uri
+    : require("@/assets/images/sprites/furniture/32x32_table.png");
+
+const tableWClothAsset =
+  Platform.OS === "web"
+    ? require("@/assets/images/sprites/furniture/32x32_table_wcloth.png").uri
+    : require("@/assets/images/sprites/furniture/32x32_table_wcloth.png");
+
+const tvStandAsset =
+  Platform.OS === "web"
+    ? require("@/assets/images/sprites/furniture/32x32_tvstand.png").uri
+    : require("@/assets/images/sprites/furniture/32x32_tvstand.png");
+
+const tvStandWSwitchAsset =
+  Platform.OS === "web"
+    ? require("@/assets/images/sprites/furniture/32x32_tvstand_wswitch.png").uri
+    : require("@/assets/images/sprites/furniture/32x32_tvstand_wswitch.png");
+
 // Simple hash function to generate a number from a string
 const simpleHash = (str: string): number => {
   let hash = 0;
@@ -161,6 +214,28 @@ const StaticCharacter = ({
   );
 };
 
+const Furniture = ({
+  x,
+  y,
+  image,
+}: { x: number; y: number; image: SkImage | null }) => {
+  if (!image) {
+    console.log("No image found for Furniture");
+    return null;
+  }
+  console.log("Furniture");
+  return (
+    <Image
+      image={image}
+      x={x * TILE_SIZE}
+      y={y * TILE_SIZE}
+      width={TILE_SIZE}
+      height={TILE_SIZE}
+      fit="contain"
+    />
+  );
+};
+
 const useStaticImages = () => {
   const up = useImage(idleUp);
   const down = useImage(idleDown);
@@ -177,6 +252,44 @@ const useAnimatedImages = () => {
   return { up, down, left, right };
 };
 
+const useFurnitureImages = () => {
+  const pottedPlantBeige = useImage(pottedPlantBeigeAsset);
+  const pottedPlantRed = useImage(pottedPlantRedAsset);
+  const chairLeftGreen = useImage(chairLeftGreenAsset);
+  const chairLeftRed = useImage(chairLeftRedAsset);
+  const chairRightGreen = useImage(chairRightGreenAsset);
+  const chairRightRed = useImage(chairRightRedAsset);
+  const table = useImage(tableAsset);
+  const tableWCloth = useImage(tableWClothAsset);
+  const tvStand = useImage(tvStandAsset);
+  const tvStandWSwitch = useImage(tvStandWSwitchAsset);
+  return {
+    pottedPlantBeige,
+    pottedPlantRed,
+    chairLeftGreen,
+    chairLeftRed,
+    chairRightGreen,
+    chairRightRed,
+    table,
+    tableWCloth,
+    tvStand,
+    tvStandWSwitch,
+  };
+};
+
+const furniture = [
+  "pottedPlantBeige",
+  "pottedPlantRed",
+  "chairLeftGreen",
+  "chairLeftRed",
+  "chairRightGreen",
+  "chairRightRed",
+  "tableWCloth",
+  "tvStand",
+  "tvStandWSwitch",
+  "table",
+];
+
 export const CanvasRenderer: React.FC<CanvasRendererProps> = ({
   layout,
   players,
@@ -185,6 +298,7 @@ export const CanvasRenderer: React.FC<CanvasRendererProps> = ({
 }) => {
   const staticImages = useStaticImages();
   const animatedImages = useAnimatedImages();
+  const furnitureImages = useFurnitureImages();
   if (!widthUnits || !heightUnits || !layout || !players) return null;
   const staticPlayers = players.filter(
     ([_, player]) => player.action === "idle",
@@ -192,6 +306,7 @@ export const CanvasRenderer: React.FC<CanvasRendererProps> = ({
   const walkingPlayers = players.filter(
     ([_, player]) => player.action === "walk",
   );
+
   return (
     <>
       <Canvas
@@ -201,16 +316,30 @@ export const CanvasRenderer: React.FC<CanvasRendererProps> = ({
         }}
       >
         {layout.map((row, y) =>
-          row.map((tile, x) => (
-            <Rect
-              key={tile.id}
-              x={x * TILE_SIZE}
-              y={y * TILE_SIZE}
-              width={TILE_SIZE}
-              height={TILE_SIZE}
-              color={tile.color}
-            />
-          )),
+          row.map((tile, x) => {
+            if (!furniture.includes(tile.type)) {
+              return (
+                <Rect
+                  key={tile.id}
+                  x={x * TILE_SIZE}
+                  y={y * TILE_SIZE}
+                  width={TILE_SIZE}
+                  height={TILE_SIZE}
+                  color={tile.color}
+                />
+              );
+            }
+            return (
+              <Furniture
+                key={tile.id}
+                x={x}
+                y={y}
+                image={
+                  furnitureImages[tile.type as keyof typeof furnitureImages]
+                }
+              />
+            );
+          }),
         )}
         {walkingPlayers.map(([id, player]) => (
           <AnimatedCharacter

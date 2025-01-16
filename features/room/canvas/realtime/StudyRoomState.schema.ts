@@ -11,7 +11,16 @@ export type TileType =
   | "table"
   | "chair"
   | "floor"
-  | "player";
+  | "player"
+  | "pottedPlantBeige"
+  | "pottedPlantRed"
+  | "chairRightGreen"
+  | "chairRightRed"
+  | "chairLeftGreen"
+  | "chairLeftRed"
+  | "tableWCloth"
+  | "tvStand"
+  | "tvStandWSwitch";
 export type PlayerDirection = "up" | "down" | "left" | "right";
 export type PlayerAction = "idle" | "walk";
 
@@ -76,7 +85,7 @@ const generateLayout = (
         layout[y][x] = {
           id: `table-${x}-${y}`,
           color: "#A0522D",
-          type: "table",
+          type: "tableWCloth",
         }; // Table
       } else if (
         (x === 6 || x === 8 || x === 12 || x === 14) &&
@@ -85,8 +94,20 @@ const generateLayout = (
         layout[y][x] = {
           id: `chair-${x}-${y}`,
           color: "#DEB887",
-          type: "chair",
+          type: "chairRightGreen",
         }; // Chair
+      } else if (x === 5 && y === 5) {
+        layout[y][x] = {
+          id: `pottedPlantBeige-${x}-${y}`,
+          color: "#8B4513",
+          type: "pottedPlantBeige",
+        }; // Potted Plant Beige
+      } else if (x === 10 && y === 10) {
+        layout[y][x] = {
+          id: `pottedPlantRed-${x}-${y}`,
+          color: "#FF6347",
+          type: "pottedPlantRed",
+        }; // Potted Plant Red
       } else {
         layout[y][x] = {
           id: `floor-${x}-${y}`,
