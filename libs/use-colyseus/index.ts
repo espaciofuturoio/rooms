@@ -1,1 +1,1 @@
-export { colyseus } from "./colyseus";
+export { useColyseus } from "./colyseus";

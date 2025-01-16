@@ -1,12 +1,9 @@
 import { useEffect } from "react";
-import {
-	connectToColyseus,
-	disconnectFromColyseus,
-	sendMessage,
-	useColyseusRoom,
-	useColyseusState,
-} from "./colyseus";
-import type { PlayerLayout, TileLayout } from "./StudyRoomState.schema";
+import type { PlayerLayout, StudyRoomState, TileLayout } from "./StudyRoomState.schema";
+import { useColyseus } from "@/libs/use-colyseus";
+
+// const serverWS = 'ws://localhost:2567'
+const serverWS = 'wss://dev-rooms-game-server-631092729836.us-central1.run.app'
 
 const convertTo2DArray = (
 	tiles: TileLayout[] | undefined,
@@ -33,12 +30,23 @@ const toMap = <T>(tiles: Record<string, T>): Array<[string, T]> => {
 };
 
 export const useStudyRoom = () => {
+
+const {
+    connectToColyseus,
+    disconnectFromColyseus,
+    useColyseusRoom,
+    useColyseusState,
+    sendMessage
+  } = useColyseus<StudyRoomState>(serverWS)
+
 	useEffect(() => {
 		(async () => {
 			await connectToColyseus("study-room");
+			console.log("connected to colyseus");
 		})();
 
 		return () => {
+			console.log("disconnecting from colyseus");
 			disconnectFromColyseus();
 		};
 	}, []);
