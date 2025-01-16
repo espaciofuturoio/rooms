@@ -1,6 +1,7 @@
 import {
   Canvas,
   ColorMatrix,
+  Group,
   Image,
   Rect,
   type SkImage,
@@ -10,9 +11,10 @@ import {
 import { memo } from "react";
 import { Platform } from "react-native";
 import type { SharedValue } from "react-native-reanimated";
-import type {
-  PlayerLayout,
-  TileLayout,
+import {
+  FloorColor,
+  type PlayerLayout,
+  type TileLayout,
 } from "./realtime/StudyRoomState.schema";
 import { isMobileBrowser } from "./utils";
 import { isMobile } from "./utils";
@@ -214,33 +216,15 @@ const StaticCharacter = ({
   );
 };
 
-const Furniture = ({
-  x,
-  y,
-  image,
-}: { x: number; y: number; image: SkImage | null }) => {
-  if (!image) {
-    console.log("No image found for Furniture");
-    return null;
-  }
-  console.log("Furniture");
-  return (
-    <Image
-      image={image}
-      x={x * TILE_SIZE}
-      y={y * TILE_SIZE}
-      width={TILE_SIZE}
-      height={TILE_SIZE}
-      fit="contain"
-    />
-  );
-};
-
 const useStaticImages = () => {
   const up = useImage(idleUp);
   const down = useImage(idleDown);
   const left = useImage(idleLeft);
   const right = useImage(idleRight);
+  if (!up || !down || !left || !right) {
+    console.log("No static image found");
+    return null;
+  }
   return { up, down, left, right };
 };
 
@@ -249,6 +233,10 @@ const useAnimatedImages = () => {
   const down = useAnimatedImageValue(walkDown);
   const left = useAnimatedImageValue(walkLeft);
   const right = useAnimatedImageValue(walkRight);
+  if (!up || !down || !left || !right) {
+    console.log("No animated image found");
+    return null;
+  }
   return { up, down, left, right };
 };
 
@@ -263,6 +251,21 @@ const useFurnitureImages = () => {
   const tableWCloth = useImage(tableWClothAsset);
   const tvStand = useImage(tvStandAsset);
   const tvStandWSwitch = useImage(tvStandWSwitchAsset);
+  if (
+    !pottedPlantBeige ||
+    !pottedPlantRed ||
+    !chairLeftGreen ||
+    !chairLeftRed ||
+    !chairRightGreen ||
+    !chairRightRed ||
+    !table ||
+    !tableWCloth ||
+    !tvStand ||
+    !tvStandWSwitch
+  ) {
+    console.log("No image found for furniture");
+    return null;
+  }
   return {
     pottedPlantBeige,
     pottedPlantRed,
@@ -299,7 +302,16 @@ export const CanvasRenderer: React.FC<CanvasRendererProps> = ({
   const staticImages = useStaticImages();
   const animatedImages = useAnimatedImages();
   const furnitureImages = useFurnitureImages();
-  if (!widthUnits || !heightUnits || !layout || !players) return null;
+  if (
+    !staticImages ||
+    !animatedImages ||
+    !furnitureImages ||
+    !widthUnits ||
+    !heightUnits ||
+    !layout ||
+    !players
+  )
+    return null;
   const staticPlayers = players.filter(
     ([_, player]) => player.action === "idle",
   );
@@ -330,14 +342,25 @@ export const CanvasRenderer: React.FC<CanvasRendererProps> = ({
               );
             }
             return (
-              <Furniture
-                key={tile.id}
-                x={x}
-                y={y}
-                image={
-                  furnitureImages[tile.type as keyof typeof furnitureImages]
-                }
-              />
+              <Group key={`${tile.id}-furniture`}>
+                <Rect
+                  x={x * TILE_SIZE}
+                  y={y * TILE_SIZE}
+                  width={TILE_SIZE}
+                  height={TILE_SIZE}
+                  color={FloorColor}
+                />
+                <Image
+                  image={
+                    furnitureImages[tile.type as keyof typeof furnitureImages]
+                  }
+                  x={x * TILE_SIZE}
+                  y={y * TILE_SIZE}
+                  width={TILE_SIZE}
+                  height={TILE_SIZE}
+                  fit="contain"
+                />
+              </Group>
             );
           }),
         )}

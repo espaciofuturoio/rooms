@@ -6,8 +6,8 @@ import type {
   TileLayout,
 } from "./StudyRoomState.schema";
 
-const serverWS = "ws://localhost:2567";
-// const serverWS = "wss://dev-rooms-game-server-631092729836.us-central1.run.app";
+// const serverWS = "ws://localhost:2567";
+const serverWS = "wss://dev-rooms-game-server-631092729836.us-central1.run.app";
 
 const convertTo2DArray = (
   tiles: TileLayout[] | undefined,
