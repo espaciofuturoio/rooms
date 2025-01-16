@@ -1,81 +1,157 @@
-import { Canvas, Rect, Image, useAnimatedImageValue, Skia, useImage } from '@shopify/react-native-skia';
-import type { PlayerLayout, TileLayout } from './realtime/StudyRoomState.schema';
-import { isMobileBrowser } from './utils';
-import { isMobile } from './utils';
-import { Image as ExpoImage } from 'expo-image';
+import {
+	Canvas,
+	Rect,
+	Image,
+	useAnimatedImageValue,
+	useImage,
+  type SkImage,
+} from "@shopify/react-native-skia";
+import type {
+	PlayerLayout,
+	TileLayout,
+} from "./realtime/StudyRoomState.schema";
+import { isMobileBrowser } from "./utils";
+import { isMobile } from "./utils";
+import { Platform } from "react-native";
+import { memo } from "react";
+import type { SharedValue } from "react-native-reanimated";
 
 interface CanvasRendererProps {
-  layout: TileLayout[][];
-  players: Array<[string, PlayerLayout]>;
-  widthUnits: number | undefined;
-  heightUnits: number | undefined;
+	layout: TileLayout[][];
+	players: Array<[string, PlayerLayout]>;
+	widthUnits: number | undefined;
+	heightUnits: number | undefined;
 }
 
-export const TILE_SIZE = isMobile || isMobileBrowser ? 16: 32;
+export const TILE_SIZE = isMobile || isMobileBrowser ? 16 : 32;
 
-// const Character = ({ x, y, color }: { x: number, y: number, color: string }) => {
-//   return <Rect x={x * TILE_SIZE} y={y * TILE_SIZE} width={TILE_SIZE} height={TILE_SIZE} color={color} />;
-// };
+// Assets
+const walkUp = Platform.OS === "web" ? require("@/assets/images/sprites/walk-up.webp").uri : require("@/assets/images/sprites/walk-up.webp");
+const walkDown = Platform.OS === "web" ? require("@/assets/images/sprites/walk-down.webp").uri : require("@/assets/images/sprites/walk-down.webp");
+const walkLeft = Platform.OS === "web" ? require("@/assets/images/sprites/walk-left.webp").uri : require("@/assets/images/sprites/walk-left.webp");
+const walkRight = Platform.OS === "web" ? require("@/assets/images/sprites/walk-right.webp").uri : require("@/assets/images/sprites/walk-right.webp");
 
-// const p1 = require("./tile000.png")
-// console.log(p1)
+const idleUp = Platform.OS === "web" ? require("@/assets/images/sprites/idle-up.png").uri : require("@/assets/images/sprites/idle-up.png");
+const idleDown = Platform.OS === "web" ? require("@/assets/images/sprites/idle-down.png").uri : require("@/assets/images/sprites/idle-down.png");
+const idleLeft = Platform.OS === "web" ? require("@/assets/images/sprites/idle-left.png").uri : require("@/assets/images/sprites/idle-left.png");
+const idleRight = Platform.OS === "web" ? require("@/assets/images/sprites/idle-right.png").uri : require("@/assets/images/sprites/idle-right.png");
 
-const data = Skia.Data.fromBase64("iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAnUExURQAAAOrUqi8nI3Q/OdWLbD8oMuSmcrhvUOQ7RBgUJQCV6RJOif///yDKkqoAAAACdFJOUwAAdpPNOAAAAAFiS0dEDIGzUWMAAAAHdElNRQfpAQ8VIAFg8qyjAAAA30lEQVQoz6WRTQ6CMBCFmx7BE5jhL7DsgAcQuAAIB2jCHIBEcO3CsDaewCVLTmiBFquJKydtk/d13kw6ZexX7L80F2rDpgAcwcE9arlzU0ThZqlYgTNrjNVRrAloItGFnY1owLFUjtICCS4gLo1lvsRcAd3Fm5UNHIzr2YC5MG1zajBRrFqLeHFNVB0U02/hpxqoKfzSM23PtETTmre2JEktaQADaqmTndxmxFeLfI/LX4A1RB70fQ/MAsONBt/KCC7DcLUsvA8fmf8BonG0AYNogskuyqLn17+Fd/ZHvABgxz0OPo4v5wAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyNS0wMS0xNVQyMTozMTozMCswMDowMKlfEMsAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjUtMDEtMTVUMjE6MzE6MzArMDA6MDDYAqh3AAAAKHRFWHRkYXRlOnRpbWVzdGFtcAAyMDI1LTAxLTE1VDIxOjMyOjAxKzAwOjAwTNg+/AAAAABJRU5ErkJggg==");
-const imageBase64 = Skia.Image.MakeImageFromEncoded(data);
-
-const Character = ({ x, y, color }: { x: number, y: number, color: string }) => {
-  
-  if (!imageBase64) return null;
-  return <Image
-  image={imageBase64}
-  x={x * TILE_SIZE}
-  y={y * TILE_SIZE}
-  width={TILE_SIZE}
-  height={TILE_SIZE}
-  fit="contain"
-/>;
+const getAnimatedImage = (direction: PlayerLayout["direction"]) => {
+  switch (direction) {
+    case "up":
+      return walkUp;
+    case "down":
+      return walkDown;
+    case "left":
+      return walkLeft;
+    case "right":
+      return walkRight;
+  }
 };
 
-// const Character = ({ x, y, color }: { x: number, y: number, color: string }) => {
-//   const image1 = useImage(p1);
-//   if (!image1) return null;
-//   return <Image
-//   image={image1}
-//   x={x * TILE_SIZE}
-//   y={y * TILE_SIZE}
-//   width={TILE_SIZE}
-//   height={TILE_SIZE}
-//   fit="contain"
-// />;
-// };
+const getStaticImage = (direction: PlayerLayout["direction"]) => {
+  switch (direction) {
+    case "up":
+      return idleUp;
+    case "down":
+      return idleDown;
+    case "left":
+      return idleLeft;
+    case "right":
+      return idleRight;
+  }
+};
 
-export const CanvasRenderer: React.FC<CanvasRendererProps> = ({ layout, players, widthUnits, heightUnits }) => {
-  if (!widthUnits || !heightUnits || !layout || !players) return null;
+const AnimatedCharacter = ({ x, y, image }: { x: number; y: number, image: SharedValue<SkImage | null>}) => {
+  if (!image) {
+    console.log("No image found for AnimatedCharacter");
+    return null;
+  }
+	return (
+		<Image
+			image={image}
+			x={x * TILE_SIZE}
+			y={y * TILE_SIZE}
+			width={TILE_SIZE}
+			height={TILE_SIZE}
+			fit="contain"
+		/>
+	);
+};
+
+const StaticCharacter = memo(({ x, y, image }: { x: number; y: number; image: SkImage | null}) => {
+  if (!image) {
+    console.log("No image found for StaticCharacter");
+    return null;
+  } 
+  console.log("StaticCharacter");
   return (
-    <>
-    <ExpoImage source={require("./tile000.png")} style={{ width: TILE_SIZE, height: TILE_SIZE }} />
-    <Canvas style={{ width: widthUnits * TILE_SIZE, height: heightUnits * TILE_SIZE }}>
-      {layout.map((row, y) =>
-        row.map((tile, x) => (
-          <Rect
-            key={tile.id}
-            x={x * TILE_SIZE}
-            y={y * TILE_SIZE}
-            width={TILE_SIZE}
-            height={TILE_SIZE}
-            color={tile.color}
-          />
-        ))
-      )}
-      {players.map(([id, player]) => (
-        <Character
-          key={id}
-          x={player.x}
-          y={player.y}
-          color={player.color}
-        />
-      ))}
-    </Canvas>
-    </>
+    <Image
+      image={image}
+      x={x * TILE_SIZE}
+      y={y * TILE_SIZE}
+      width={TILE_SIZE}
+      height={TILE_SIZE}
+      fit="contain"
+    />
   );
-}; 
+});
+
+const useStaticImages = () => {
+  const up = useImage(idleUp);
+  const down = useImage(idleDown);
+  const left = useImage(idleLeft);
+  const right = useImage(idleRight);
+  return { up, down, left, right };
+}
+
+
+const useAnimatedImages = () => {
+  const up = useAnimatedImageValue(walkUp);
+  const down = useAnimatedImageValue(walkDown);
+  const left = useAnimatedImageValue(walkLeft);
+  const right = useAnimatedImageValue(walkRight);
+  return { up, down, left, right };
+}
+
+export const CanvasRenderer: React.FC<CanvasRendererProps> = ({
+	layout,
+	players,
+	widthUnits,
+	heightUnits,
+}) => {
+	if (!widthUnits || !heightUnits || !layout || !players) return null;
+  const staticPlayers = players.filter(([_, player]) => player.action === "idle");
+  const walkingPlayers = players.filter(([_, player]) => player.action === "walk");
+  const staticImages = useStaticImages();
+  const animatedImages = useAnimatedImages();
+	return (
+		<>
+			<Canvas
+				style={{
+					width: widthUnits * TILE_SIZE,
+					height: heightUnits * TILE_SIZE,
+				}}
+			>
+				{layout.map((row, y) =>
+					row.map((tile, x) => (
+						<Rect
+							key={tile.id}
+							x={x * TILE_SIZE}
+							y={y * TILE_SIZE}
+							width={TILE_SIZE}
+							height={TILE_SIZE}
+							color={tile.color}
+						/>
+					)),
+				)}
+				{walkingPlayers.map(([id, player]) => (
+					<AnimatedCharacter key={id} x={player.x} y={player.y} image={animatedImages[player.direction]}/>
+				))}
+				{staticPlayers.map(([id, player]) => (
+					<StaticCharacter key={id} x={player.x} y={player.y} image={staticImages[player.direction]}/>
+				))}
+			</Canvas>
+		</>
+	);
+};

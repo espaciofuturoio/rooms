@@ -59,17 +59,17 @@ export const useStudyRoom = () => {
 	)?.toJSON());
 
 
-	const movePlayer = (dx: number, dy: number) => {
-		console.log("movePlayer", dx, dy);
-		sendMessage("move", { dx, dy });
+	const movePlayer = (dx: number, dy: number, direction: string) => {
+		console.log("movePlayer", dx, dy, direction);
+		sendMessage("move", { dx, dy, direction });
 	};
 
-	const stopPlayer = () => {
-		console.log("stopPlayer");
+	const stopPlayer = (key: string) => {
+		console.log("stopPlayer", key);
+		sendMessage("stop", { key });
 	};
 
-	console.log("layout", layout2D);
-	console.log("players", players, state);
+	console.log("players ---->", players.map(([id, player]) => ({playerId: id, action: player.action, direction: player.direction})));
 
 	return { sessionId, widthUnits, heightUnits, layout: layout2D, players, movePlayer, stopPlayer, state };
 };

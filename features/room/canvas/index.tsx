@@ -13,11 +13,14 @@ const enableJoystick = isMobile || isMobileBrowser;
 
 export const CoffeeShop: React.FC = () => {
   const {sessionId, widthUnits, heightUnits, layout, players, movePlayer, stopPlayer} = useStudyRoom();
-  const handleKeyDown = useKeyHandler(movePlayer);
+  const {handleKeyPress, handleKeyUp} = useKeyHandler({
+    handleMove: movePlayer,
+    handleKeyRelease: stopPlayer,
+  });
   const {onMoveJoystick} = useJoystick(movePlayer);
   const viewRef = useRef<View>(null);
 
-  const behavior = Platform.OS === 'web' ? { onKeyDown: handleKeyDown } : {};
+  const behavior = Platform.OS === 'web' ? { onKeyDown: handleKeyPress, onKeyUp: handleKeyUp } : {};
 
   useFocusEffect(
     useCallback(() => {
@@ -27,8 +30,6 @@ export const CoffeeShop: React.FC = () => {
   );
 
   if (!sessionId || !layout) return <Text>Loading...</Text>;
-
-  console.log({players});
 
   return (
     <View
