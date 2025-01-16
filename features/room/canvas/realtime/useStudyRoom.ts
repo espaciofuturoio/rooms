@@ -75,9 +75,9 @@ export const useStudyRoom = () => {
     sendMessage("move", { dx, dy, direction });
   };
 
-  const stopPlayer = (key: string) => {
-    console.log("stopPlayer", key);
-    sendMessage("stop", { key });
+  const stopPlayer = () => {
+    console.log("stopPlayer");
+    sendMessage("stop", {});
   };
 
   console.log(

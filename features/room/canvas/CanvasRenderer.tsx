@@ -29,37 +29,37 @@ export const TILE_SIZE = isMobile || isMobileBrowser ? 16 : 32;
 // Assets
 const walkUp =
   Platform.OS === "web"
-    ? require("@/assets/images/sprites/walk-up.webp").uri
-    : require("@/assets/images/sprites/walk-up.webp");
+    ? require("@/assets/images/sprites/boy/walk-up.webp").uri
+    : require("@/assets/images/sprites/boy/walk-up.webp");
 const walkDown =
   Platform.OS === "web"
-    ? require("@/assets/images/sprites/walk-down.webp").uri
-    : require("@/assets/images/sprites/walk-down.webp");
+    ? require("@/assets/images/sprites/boy/walk-down.webp").uri
+    : require("@/assets/images/sprites/boy/walk-down.webp");
 const walkLeft =
   Platform.OS === "web"
-    ? require("@/assets/images/sprites/walk-left.webp").uri
-    : require("@/assets/images/sprites/walk-left.webp");
+    ? require("@/assets/images/sprites/boy/walk-left.webp").uri
+    : require("@/assets/images/sprites/boy/walk-left.webp");
 const walkRight =
   Platform.OS === "web"
-    ? require("@/assets/images/sprites/walk-right.webp").uri
-    : require("@/assets/images/sprites/walk-right.webp");
+    ? require("@/assets/images/sprites/boy/walk-right.webp").uri
+    : require("@/assets/images/sprites/boy/walk-right.webp");
 
 const idleUp =
   Platform.OS === "web"
-    ? require("@/assets/images/sprites/idle-up.png").uri
-    : require("@/assets/images/sprites/idle-up.png");
+    ? require("@/assets/images/sprites/boy/idle-up.png").uri
+    : require("@/assets/images/sprites/boy/idle-up.png");
 const idleDown =
   Platform.OS === "web"
-    ? require("@/assets/images/sprites/idle-down.png").uri
-    : require("@/assets/images/sprites/idle-down.png");
+    ? require("@/assets/images/sprites/boy/idle-down.png").uri
+    : require("@/assets/images/sprites/boy/idle-down.png");
 const idleLeft =
   Platform.OS === "web"
-    ? require("@/assets/images/sprites/idle-left.png").uri
-    : require("@/assets/images/sprites/idle-left.png");
+    ? require("@/assets/images/sprites/boy/idle-left.png").uri
+    : require("@/assets/images/sprites/boy/idle-left.png");
 const idleRight =
   Platform.OS === "web"
-    ? require("@/assets/images/sprites/idle-right.png").uri
-    : require("@/assets/images/sprites/idle-right.png");
+    ? require("@/assets/images/sprites/boy/idle-right.png").uri
+    : require("@/assets/images/sprites/boy/idle-right.png");
 
 // Simple hash function to generate a number from a string
 const simpleHash = (str: string): number => {
