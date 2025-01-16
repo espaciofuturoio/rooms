@@ -36,32 +36,6 @@ const idleDown = Platform.OS === "web" ? require("@/assets/images/sprites/idle-d
 const idleLeft = Platform.OS === "web" ? require("@/assets/images/sprites/idle-left.png").uri : require("@/assets/images/sprites/idle-left.png");
 const idleRight = Platform.OS === "web" ? require("@/assets/images/sprites/idle-right.png").uri : require("@/assets/images/sprites/idle-right.png");
 
-const getAnimatedImage = (direction: PlayerLayout["direction"]) => {
-  switch (direction) {
-    case "up":
-      return walkUp;
-    case "down":
-      return walkDown;
-    case "left":
-      return walkLeft;
-    case "right":
-      return walkRight;
-  }
-};
-
-const getStaticImage = (direction: PlayerLayout["direction"]) => {
-  switch (direction) {
-    case "up":
-      return idleUp;
-    case "down":
-      return idleDown;
-    case "left":
-      return idleLeft;
-    case "right":
-      return idleRight;
-  }
-};
-
 const AnimatedCharacter = ({ x, y, image }: { x: number; y: number, image: SharedValue<SkImage | null>}) => {
   if (!image) {
     console.log("No image found for AnimatedCharacter");
@@ -79,7 +53,7 @@ const AnimatedCharacter = ({ x, y, image }: { x: number; y: number, image: Share
 	);
 };
 
-const StaticCharacter = memo(({ x, y, image }: { x: number; y: number; image: SkImage | null}) => {
+const StaticCharacter = ({ x, y, image }: { x: number; y: number; image: SkImage | null}) => {
   if (!image) {
     console.log("No image found for StaticCharacter");
     return null;
@@ -95,7 +69,7 @@ const StaticCharacter = memo(({ x, y, image }: { x: number; y: number; image: Sk
       fit="contain"
     />
   );
-});
+};
 
 const useStaticImages = () => {
   const up = useImage(idleUp);
@@ -120,11 +94,11 @@ export const CanvasRenderer: React.FC<CanvasRendererProps> = ({
 	widthUnits,
 	heightUnits,
 }) => {
+  const staticImages = useStaticImages();
+  const animatedImages = useAnimatedImages();
 	if (!widthUnits || !heightUnits || !layout || !players) return null;
   const staticPlayers = players.filter(([_, player]) => player.action === "idle");
   const walkingPlayers = players.filter(([_, player]) => player.action === "walk");
-  const staticImages = useStaticImages();
-  const animatedImages = useAnimatedImages();
 	return (
 		<>
 			<Canvas
