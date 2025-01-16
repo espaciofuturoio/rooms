@@ -1,32 +1,39 @@
-import { useRef, useState, useCallback, useSyncExternalStore } from "react";
-import { store } from "./store";
 import type { Schema } from "@colyseus/schema";
 import { Client, type Room } from "colyseus.js";
+import { useCallback, useRef, useState, useSyncExternalStore } from "react";
+import { store } from "./store";
 
 export const useColyseus = <S = Schema>(
   endpoint: string,
-  schema?: new (...args: unknown[]) => S
+  schema?: new (...args: unknown[]) => S,
 ) => {
   const client = useRef(new Client(endpoint));
   const roomStore = useRef(store<Room<S> | undefined>(undefined));
   const stateStore = useRef(store<S | undefined>(undefined));
   const [connecting, setConnecting] = useState(false);
 
-  const connectToColyseus = useCallback(async (roomName: string, options = {}) => {
-    if (connecting || roomStore.current.get()) return;
+  const connectToColyseus = useCallback(
+    async (roomName: string, options = {}) => {
+      if (connecting || roomStore.current.get()) return;
 
-    setConnecting(true);
+      setConnecting(true);
 
-    try {
-      const room = await client.current.joinOrCreate<S>(roomName, options, schema);
-      await setCurrentRoom(room);
-    } catch (e) {
-      console.error("Failed to connect to Colyseus!");
-      console.log(e);
-    } finally {
-      setConnecting(false);
-    }
-  }, [connecting, schema]);
+      try {
+        const room = await client.current.joinOrCreate<S>(
+          roomName,
+          options,
+          schema,
+        );
+        await setCurrentRoom(room);
+      } catch (e) {
+        console.error("Failed to connect to Colyseus!");
+        console.log(e);
+      } finally {
+        setConnecting(false);
+      }
+    },
+    [connecting, schema],
+  );
 
   const setCurrentRoom = useCallback(async (room: Room<S>) => {
     if (roomStore.current.get()) {
@@ -113,7 +120,7 @@ export const useColyseus = <S = Schema>(
 
   function useColyseusState(): S | undefined;
   function useColyseusState<T extends (state: S) => unknown>(
-    selector: T
+    selector: T,
   ): ReturnType<T> | undefined;
   function useColyseusState<T extends (state: S) => unknown>(selector?: T) {
     const subscribe = (callback: () => void) =>
@@ -135,6 +142,6 @@ export const useColyseus = <S = Schema>(
     disconnectFromColyseus,
     useColyseusRoom,
     useColyseusState,
-    sendMessage
+    sendMessage,
   };
 };

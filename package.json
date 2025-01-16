@@ -14,20 +14,20 @@
     "build:web": "expo export -p web",
     "serve:web": "bunx serve dist",
     "ts": "bunx --bun tsc -w --noEmit --project tsconfig.json",
-    "format": "bunx @biomejs/biome format --write ./src",
-    "check": "bunx @biomejs/biome check --write ./src",
-    "lint:biome": "bunx @biomejs/biome lint --write --unsafe ./src",
+    "format": "bunx @biomejs/biome format --write ./",
+    "check": "bunx @biomejs/biome check --write ./",
+    "lint:biome": "bunx @biomejs/biome lint --write --unsafe ./app ./features ./components ./libs",
     "prepare": "husky"
   },
   "jest": {
     "preset": "jest-expo"
   },
   "lint-staged": {
-    "*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}": [
-      "biome check --write --unsafe --no-errors-on-unmatched"
-    ],
-    "src/**/*.{ts,tsx}": ["tsc-files --noEmit --pretty"]
+    "*": [
+      "biome check --write --unsafe --no-errors-on-unmatched --files-ignore-unknown=true"
+    ]
   },
+
   "dependencies": {
     "@colyseus/schema": "^2.0.36",
     "@expo/vector-icons": "^14.0.2",
@@ -74,7 +74,8 @@
     "jest-expo": "~52.0.3",
     "lint-staged": "^15.3.0",
     "react-test-renderer": "18.3.1",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "xmldom": "^0.6.0"
   },
   "private": true
 }

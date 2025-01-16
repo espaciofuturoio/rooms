@@ -1,6 +1,6 @@
 export const calcDistance = (
   p1: { x: number; y: number },
-  p2: { x: number; y: number }
+  p2: { x: number; y: number },
 ) => {
   const dx = p2.x - p1.x;
   const dy = p2.y - p1.y;
@@ -16,7 +16,7 @@ export const calcDistance = (
  */
 export const calcAngle = (
   p1: { x: number; y: number },
-  p2: { x: number; y: number }
+  p2: { x: number; y: number },
 ) => {
   const dx = p2.x - p1.x;
   const dy = p2.y - p1.y;
@@ -37,12 +37,12 @@ export const radiansToDegrees = (a: number) => {
 export const findCoord = (
   position: { x: number; y: number },
   distance: number,
-  angle: number
+  angle: number,
 ) => {
   const b = { x: 0, y: 0 };
   const radian = degreesToRadians(angle);
   b.x = position.x + distance * Math.cos(radian);
   b.y = position.y + distance * Math.sin(radian);
-  if (b.y < 0) b.y += 150
+  if (b.y < 0) b.y += 150;
   return b;
 };
