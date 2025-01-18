@@ -59,6 +59,7 @@ export const useStudyRoom = () => {
   const state = useColyseusState();
 
   const sessionId = useColyseusRoom()?.sessionId;
+  const roomId = useColyseusRoom()?.roomId;
   const widthUnits = useColyseusState((state) => state.widthUnits);
   const heightUnits = useColyseusState((state) => state.heightUnits);
   const layout1D = useColyseusState(
@@ -89,6 +90,7 @@ export const useStudyRoom = () => {
   );
 
   return {
+    roomId,
     sessionId,
     widthUnits,
     heightUnits,

@@ -1,4 +1,6 @@
+import { LoadingAnimation } from "@/components/base/LoadingAnimation";
 import { ReactNativeJoystick } from "@/libs/react-native-joystick";
+import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useRef } from "react";
 import {
   Platform,
@@ -12,11 +14,13 @@ import { useJoystick } from "./game/useJoystick";
 import { useKeyHandler } from "./game/useKeyHandler";
 import { useStudyRoom } from "./realtime/useStudyRoom";
 import { isMobile, isMobileBrowser } from "./utils";
-import { LoadingAnimation } from "@/components/base/LoadingAnimation";
 
 const enableJoystick = isMobile || isMobileBrowser;
 
 export const CoffeeShop: React.FC = () => {
+  const params = useLocalSearchParams<{ query?: string }>();
+  console.log("params", params);
+
   const {
     sessionId,
     widthUnits,
@@ -38,9 +42,14 @@ export const CoffeeShop: React.FC = () => {
       ? { onKeyDown: handleKeyPress, onKeyUp: handleKeyUp }
       : {};
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: we need to re-render when sessionId changes
   useEffect(() => {
     viewRef.current?.focus();
-  }, [sessionId, layout]);
+  }, [sessionId]);
+
+  useEffect(() => {
+    router.setParams({ sessionId });
+  }, [sessionId]);
 
   const handleXButtonPress = () => {
     console.log("X Button pressed");
@@ -49,6 +58,8 @@ export const CoffeeShop: React.FC = () => {
   const handleYButtonPress = () => {
     console.log("Y Button pressed");
   };
+
+  console.log(sessionId);
 
   if (!sessionId || !layout) return <LoadingAnimation />;
 
