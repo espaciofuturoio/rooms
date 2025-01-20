@@ -13,6 +13,7 @@ import { CanvasRenderer } from "./CanvasRenderer";
 import { useJoystick } from "./game/useJoystick";
 import { useKeyHandler } from "./game/useKeyHandler";
 import { useStudyRoom } from "./realtime/useStudyRoom";
+import { UserModal } from "./user_modal";
 import { isMobile, isMobileBrowser } from "./utils";
 
 const enableJoystick = isMobile || isMobileBrowser;
@@ -73,6 +74,7 @@ export const CoffeeShop: React.FC = () => {
       />
       {enableJoystick && (
         <>
+          <UserModal />
           <View style={{ position: "absolute", bottom: 20, left: 20 }}>
             <ReactNativeJoystick
               color="#06b6d4"

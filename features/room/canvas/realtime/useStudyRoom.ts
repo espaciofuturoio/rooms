@@ -7,6 +7,7 @@ import type {
 } from "./StudyRoomState.schema";
 
 const serverWS = "wss://dev-rooms-game-server-631092729836.us-central1.run.app";
+// const serverWS = "ws://localhost:2567";
 
 const convertTo2DArray = (
   tiles: TileLayout[] | undefined,
