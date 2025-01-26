@@ -2,6 +2,7 @@ import { Button, ButtonText } from "@/components/ui/button";
 import { Center } from "@/components/ui/center";
 import { Heading } from "@/components/ui/heading";
 import { CloseIcon, Icon } from "@/components/ui/icon";
+import { Input, InputField } from "@/components/ui/input";
 import {
   Modal,
   ModalBackdrop,
@@ -18,6 +19,7 @@ export { UserModal };
 
 const UserModal = () => {
   const [showModal, setShowModal] = useState(false);
+  const [_name, _setName] = useState("");
   return (
     <Center className="h-[300px]">
       <Button onPress={() => setShowModal(true)}>
@@ -34,7 +36,7 @@ const UserModal = () => {
         <ModalContent>
           <ModalHeader>
             <Heading size="md" className="text-typography-950">
-              Invite your team
+              Welcome
             </Heading>
             <ModalCloseButton>
               <Icon
@@ -45,11 +47,34 @@ const UserModal = () => {
             </ModalCloseButton>
           </ModalHeader>
           <ModalBody>
-            <Text size="sm" className="text-typography-500">
-              Elevate user interactions with our versatile modals. Seamlessly
-              integrate notifications, forms, and media displays. Make an impact
-              effortlessly.
-            </Text>
+            <FormControl className="p-4 border rounded-lg border-outline-300">
+              <VStack space="xl">
+                <Heading className="text-typography-900">Login</Heading>
+                <VStack space="xs">
+                  <Text className="text-typography-500">Email</Text>
+                  <Input className="min-w-[250px]">
+                    <InputField type="text" />
+                  </Input>
+                </VStack>
+                <VStack space="xs">
+                  <Text className="text-typography-500">Password</Text>
+                  <Input className="text-center">
+                    <InputField type={showPassword ? "text" : "password"} />
+                    <InputSlot className="pr-3" onPress={handleState}>
+                      <InputIcon as={showPassword ? EyeIcon : EyeOffIcon} />
+                    </InputSlot>
+                  </Input>
+                </VStack>
+                <Button
+                  className="ml-auto"
+                  onPress={() => {
+                    setShowModal(false);
+                  }}
+                >
+                  <ButtonText className="text-typography-0">Save</ButtonText>
+                </Button>
+              </VStack>
+            </FormControl>
           </ModalBody>
           <ModalFooter>
             <Button
